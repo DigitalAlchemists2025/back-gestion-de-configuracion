@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserDTO } from './dto/user.dto';
 import { IUser } from 'src/common/interfaces/user.interface';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER } from '../common/models/models';
 import { Model } from 'mongoose';
