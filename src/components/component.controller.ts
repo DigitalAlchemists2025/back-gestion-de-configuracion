@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { ComponentService } from './component.service';
-import { ComponentDto } from './dto/component.dto';
+import { CreateComponentDto } from './dto/create-component.dto';
+import { UpdateComponentDto } from './dto/update-component.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('components')
@@ -9,7 +10,7 @@ export class ComponentController {
   constructor(private readonly componentService: ComponentService) {}
 
   @Post()
-  create(@Body() dto: ComponentDto) {
+  create(@Body() dto: CreateComponentDto) {
     return this.componentService.create(dto);
   }
 
@@ -24,7 +25,7 @@ export class ComponentController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: ComponentDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateComponentDto) {
     return this.componentService.update(id, dto);
   }
 

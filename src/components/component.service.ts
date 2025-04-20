@@ -1,16 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ComponentDto } from './dto/component.dto';
+import { CreateComponentDto } from './dto/create-component.dto';
+import { UpdateComponentDto } from './dto/update-component.dto';
+import { Component } from 'src/common/interfaces/component.interface';
 
 @Injectable()
 export class ComponentService {
   constructor(
-    @InjectModel('Component') private readonly componentModel: Model<any>,
+    @InjectModel('Component') private readonly componentModel: Model<Component>,
   ) {}
 
-  async create(data: ComponentDto) {
-    const created = new this.componentModel(data);
+  async create(createComponentDto: CreateComponentDto) {
+    const created = new this.componentModel(createComponentDto);
     return created.save();
   }
 
@@ -24,8 +26,8 @@ export class ComponentService {
     return component;
   }
 
-  async update(id: string, data: ComponentDto) {
-    const updated = await this.componentModel.findByIdAndUpdate(id, data, {
+  async update(id: string, updateComponentDto: UpdateComponentDto) {
+    const updated = await this.componentModel.findByIdAndUpdate(id, updateComponentDto, {
       new: true,
       runValidators: true,
     });
