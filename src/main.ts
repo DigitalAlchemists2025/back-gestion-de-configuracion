@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // Configurar CORS usando el middleware
   app.use(cors({
-    origin: [process.env.FRONT_URL],
+    origin: [process.env.FRONT_URL, process.env.FRONT_MOVIL_URL],
     methods: ['GET', 'POST','PUT','DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
