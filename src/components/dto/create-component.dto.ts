@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsMongoId, IsArray, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsMongoId, IsArray, IsIn, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class InlineDescriptionDto {
+  @IsString()
+  name: string;
+
+  @IsString()
+  description: string;
+}
 
 export class CreateComponentDto {
   @IsString()
@@ -12,9 +21,10 @@ export class CreateComponentDto {
   status?: string;
 
   @IsArray()
-  @IsMongoId({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => InlineDescriptionDto)
   @IsOptional()
-  descriptions?: string[];
+  descriptions?: InlineDescriptionDto[];
 
   @IsArray()
   @IsMongoId({ each: true })
