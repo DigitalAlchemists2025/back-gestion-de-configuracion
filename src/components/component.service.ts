@@ -1,33 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { Component } from 'src/common/interfaces/component.interface';
+import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
+import { Description } from 'src/common/interfaces/description.interface';
 
 @Injectable()
 export class ComponentService {
   constructor(
     @InjectModel('Component') private readonly componentModel: Model<Component>,
+    @InjectModel('Description') private readonly descriptionModel: Model<Description>,
   ) {}
 
-  async create(createComponentDto: CreateComponentDto) {
-    const created = new this.componentModel(createComponentDto);
+  create(dto: CreateComponentDto) {
+    const created = new this.componentModel(dto);
     return created.save();
   }
 
-  async findAll() {
-    return this.componentModel.find().exec();
+  findAll() {
+    return this.componentModel
+      .find()
+      .populate('descriptions') 
+      .populate('components');  
   }
 
   async findOne(id: string) {
-    const component = await this.componentModel.findById(id).exec();
-    if (!component) throw new NotFoundException('Componente no encontrado');
-    return component;
+    const found = await this.componentModel
+      .findById(id)
+      .populate('descriptions')
+      .populate('components');
+    if (!found) throw new NotFoundException('Componente no encontrado');
+    return found;
   }
 
-  async update(id: string, updateComponentDto: UpdateComponentDto) {
-    const updated = await this.componentModel.findByIdAndUpdate(id, updateComponentDto, {
+  async update(id: string, dto: UpdateComponentDto) {
+    const updated = await this.componentModel.findByIdAndUpdate(id, dto, {
       new: true,
       runValidators: true,
     });
@@ -39,5 +48,33 @@ export class ComponentService {
     const deleted = await this.componentModel.findByIdAndDelete(id);
     if (!deleted) throw new NotFoundException('Componente no encontrado');
     return deleted;
+  }
+
+  async addDescription(componentId: string, dto: CreateDescriptionDto) {
+    const component = await this.componentModel.findById(componentId).exec();
+    if (!component) {
+      throw new NotFoundException('Componente no encontrado');
+    }
+  
+    const newDescription = await this.descriptionModel.create(dto);
+  
+    component.descriptions.push(newDescription._id);
+    await component.save();
+  
+    return newDescription;
+  }
+  
+  async addSubComponent(componentId: string, dto: CreateComponentDto) {
+    const component = await this.componentModel.findById(componentId).exec();
+    if (!component) {
+      throw new NotFoundException('Componente no encontrado');
+    }
+  
+    const subComponent = await this.componentModel.create(dto);
+  
+    component.components.push(subComponent._id);
+    await component.save();
+  
+    return subComponent;
   }
 }

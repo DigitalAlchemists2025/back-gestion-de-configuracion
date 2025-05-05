@@ -1,11 +1,12 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface Component extends Document {
+  _id: Types.ObjectId;
   name: string;
   type: string;
   status: 'activo' | 'de baja';
-  description?: string[];
-  componentFrom?: string; // o `Component` si quieres anidamiento más estricto
+  descriptions: Types.ObjectId[];
+  components: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }

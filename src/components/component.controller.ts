@@ -3,6 +3,7 @@ import { ComponentService } from './component.service';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
 
 @ApiTags('components')
 @Controller('components')
@@ -32,5 +33,21 @@ export class ComponentController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.componentService.delete(id);
+  }
+
+  @Post(':id/descriptions')
+  async addDescription(
+    @Param('id') componentId: string,
+    @Body() dto: CreateDescriptionDto,
+  ) {
+    return this.componentService.addDescription(componentId, dto);
+  }
+
+  @Post(':id/components')
+  async addSubComponent(
+    @Param('id') componentId: string,
+    @Body() dto: CreateComponentDto,
+  ) {
+    return this.componentService.addSubComponent(componentId, dto);
   }
 }

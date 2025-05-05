@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsMongoId, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsMongoId, IsArray, IsIn } from 'class-validator';
 
 export class CreateComponentDto {
   @IsString()
@@ -12,11 +12,12 @@ export class CreateComponentDto {
   status?: string;
 
   @IsArray()
-  @IsString({ each: true })
+  @IsMongoId({ each: true })
   @IsOptional()
-  description?: string[];
+  descriptions?: string[];
 
-  @IsMongoId()
+  @IsArray()
+  @IsMongoId({ each: true })
   @IsOptional()
-  componentFrom?: string;
+  components?: string[];
 }
