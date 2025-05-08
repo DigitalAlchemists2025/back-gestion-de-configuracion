@@ -102,7 +102,7 @@ export class ComponentService {
     const component = await this.componentModel.findById(componentId).exec();
     if (!component) throw new NotFoundException('Componente no encontrado');
 
-    const subComponent = await this.componentModel.create(dto);
+    const subComponent = await this.create(dto);
     component.components.push(subComponent._id);
     await component.save();
 
