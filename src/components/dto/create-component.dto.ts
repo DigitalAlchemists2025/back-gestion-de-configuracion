@@ -17,7 +17,6 @@ export class CreateComponentDto {
   type: string;
 
   @IsIn(['activo', 'de baja'])
-  @IsOptional()
   status?: string;
 
   @IsArray()
