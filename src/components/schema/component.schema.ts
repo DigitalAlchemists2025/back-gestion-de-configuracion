@@ -4,7 +4,7 @@ export const ComponentSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     type: { type: String, required: true },
-    status: { type: String, enum: ['activo', 'de baja'], default: 'activo' },
+    status: { type: String, enum: ['activo', 'de baja'], default: 'activo', required: true },
     descriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description',}],
     components: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Component' }],
   },
