@@ -38,6 +38,12 @@ export class UsersController {
     return this.userService.findOne(id);
   }
 
+  @Get('email/:correo')
+  @ApiOperation({ summary: 'Obtener uno por correo' })
+  findOneByEmail(@Param('correo') correo: string) {
+    return this.userService.findByEmail(correo);
+  }
+
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar' })
   update(@Param('id') id: string, @Body() userDTO: UserDTO) {
