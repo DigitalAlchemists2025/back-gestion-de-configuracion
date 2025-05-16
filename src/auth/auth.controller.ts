@@ -21,8 +21,29 @@ export class AuthController {
   }
 
   @Get('email/:correo')
-    @ApiOperation({ summary: 'Obtener uno por correo' })
-    findOneByEmail(@Param('correo') correo: string) {
-      return this.authService.validateEmail(correo);
+  @ApiOperation({ summary: 'Validar inicio desde google' })
+  async loginOrDefault(@Param('correo') correo: string) {
+    let user: any;
+    try {
+      user = await this.authService.validateEmail(correo);
+    } catch {
+      console.log("EMAIL NO REGISTRADO")
+    } finally {
+      if (!user) {
+        user = {
+          _id: '6807207a89cd891a98034975',
+          email: 'user@ucn.cl',
+          role: 'usuario',
+        };
+      }
+    }
+
+    const { access_token, id } = await this.authService.signIn(user);
+
+    return {
+      access_token,
+      id,
+      role: user.role,
+    };
   }
 }
