@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, Get, Req, UseGuards, Param } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserDTO } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -18,5 +18,13 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() userDTO: UserDTO) {
     return await this.authService.signUp(userDTO);
+  }
+
+  @Get('email/:correo')
+    @ApiOperation({ summary: 'Obtener uno por correo' })
+    findOneByEmail(@Param('correo') correo: string) {
+      const hola = this.authService.validateEmail(correo);
+      console.log(hola)
+      return hola;
   }
 }
