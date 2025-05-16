@@ -23,8 +23,6 @@ export class AuthController {
   @Get('email/:correo')
     @ApiOperation({ summary: 'Obtener uno por correo' })
     findOneByEmail(@Param('correo') correo: string) {
-      const hola = this.authService.validateEmail(correo);
-      console.log(hola)
-      return hola;
+      return this.authService.validateEmail(correo);
   }
 }

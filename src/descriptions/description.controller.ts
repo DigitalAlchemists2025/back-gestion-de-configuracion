@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, UseGuards } from '@nestjs/common';
 import { DescriptionService } from './description.service';
 import { CreateDescriptionDto } from './dto/create-description.dto';
 import { UpdateDescriptionDto } from './dto/update-description.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('descriptions')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class DescriptionController {
   constructor(private readonly service: DescriptionService) {}
 

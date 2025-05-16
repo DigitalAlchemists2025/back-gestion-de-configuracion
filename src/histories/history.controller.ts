@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HistoryService } from './history.service';
 import { HistoryDto } from './dto/history.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('histories')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('histories')
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
