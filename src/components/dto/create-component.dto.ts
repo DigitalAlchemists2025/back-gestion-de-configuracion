@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsMongoId, IsArray, IsIn, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsMongoId, IsArray, IsIn, ValidateNested, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class InlineDescriptionDto {
@@ -29,4 +29,7 @@ export class CreateComponentDto {
   @IsMongoId({ each: true })
   @IsOptional()
   components?: string[];
+
+  @IsBoolean()
+  isSubComponent?: boolean;
 }

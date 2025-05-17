@@ -73,6 +73,8 @@ export class ComponentService {
       component.descriptions = newDescIds;
     }
 
+    if(dto.isSubComponent) component.isSubComponent = dto.isSubComponent;
+
     await component.save();
 
     return this.componentModel

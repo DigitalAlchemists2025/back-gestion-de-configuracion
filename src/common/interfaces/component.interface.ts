@@ -7,6 +7,7 @@ export interface Component extends Document {
   status: 'activo' | 'de baja';
   descriptions: Types.ObjectId[];
   components: Types.ObjectId[];
+  isSubComponent: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -7,6 +7,7 @@ export const ComponentSchema = new mongoose.Schema(
     status: { type: String, enum: ['activo', 'de baja'], default: 'activo', required: true },
     descriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description',}],
     components: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Component' }],
+    isSubComponent: { type: Boolean, default: false, required: true }
   },
   { timestamps: true }
 );
