@@ -105,10 +105,41 @@ export class ComponentService {
     if (!component) throw new NotFoundException('Componente no encontrado');
 
     const subComponent = await this.create(dto);
+    subComponent.isSubComponent = true;
+    await subComponent.save();
     component.components.push(subComponent._id);
     await component.save();
 
     return subComponent;
+  }
+
+  async associateChildComponent(parentId: string, childId: string) {
+    const parent = await this.componentModel.findById(parentId);
+    if (!parent) throw new NotFoundException('Componente no encontrado');
+
+    const child = await this.componentModel.findById(childId);
+    if (!child) throw new NotFoundException('Subcomponente no encontrado');
+
+    if (child.isSubComponent) {
+      throw new Error('Este componente ya está asociado como subcomponente de otro.');
+    }
+
+    const alreadyAssociated = parent.components.some(
+      (compId) => compId.toString() === childId
+    );
+
+    if (!alreadyAssociated) {
+      parent.components.push(child._id);
+      await parent.save();
+
+      child.isSubComponent = true;
+      await child.save();
+    }
+
+    return this.componentModel
+      .findById(parent._id)
+      .populate('components')
+      .populate('descriptions');
   }
 }
 

@@ -31,5 +31,6 @@ export class CreateComponentDto {
   components?: string[];
 
   @IsBoolean()
+  @IsOptional()
   isSubComponent?: boolean;
 }

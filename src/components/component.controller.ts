@@ -53,4 +53,12 @@ export class ComponentController {
   ) {
     return this.componentService.addSubComponent(componentId, dto);
   }
+
+  @Post(':id/associate/:childId')
+  async associateChild(
+    @Param('id') parentId: string,
+    @Param('childId') childId: string
+  ) {
+  return this.componentService.associateChildComponent(parentId, childId);
+  }
 }
