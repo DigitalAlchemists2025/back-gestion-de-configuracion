@@ -129,11 +129,11 @@ export class ComponentService {
     );
 
     if (!alreadyAssociated) {
-      parent.components.push(child._id);
-      await parent.save();
-
       child.isSubComponent = true;
       await child.save();
+
+      parent.components.push(child._id);
+      await parent.save();
     }
 
     return this.componentModel
