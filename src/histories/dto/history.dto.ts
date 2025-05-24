@@ -13,9 +13,7 @@ export class HistoryDto {
   user_id: string;
 
   @ApiProperty()
-  @IsDateString()
-  @IsNotEmpty()
-  date: string;
+  date: Date;
 
   @ApiProperty()
   @IsString()

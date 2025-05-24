@@ -30,7 +30,7 @@ export class CreateComponentDto {
   @IsOptional()
   components?: string[];
 
-  @IsBoolean()
+  @IsMongoId()
   @IsOptional()
-  isSubComponent?: boolean;
+  parent?: string;
 }

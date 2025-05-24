@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateComponentDto } from './dto/create-component.dto';
@@ -73,7 +73,20 @@ export class ComponentService {
       component.descriptions = newDescIds;
     }
 
-    if(dto.isSubComponent) component.isSubComponent = dto.isSubComponent;
+    if(dto.parent) {
+      if (dto.parent === id) {
+        throw new BadRequestException('Un componente no puede ser su propio padre.');
+      }
+      if (dto.parent === null) {
+        component.parent = null;
+      } else {
+        const parentComponent = await this.componentModel.findById(dto.parent);
+        if (!parentComponent) {
+          throw new NotFoundException('Componente padre no encontrado');
+        }
+        component.parent = parentComponent._id;
+      }
+    }
 
     await component.save();
 
@@ -84,9 +97,28 @@ export class ComponentService {
   }
 
   async delete(id: string) {
-    const deleted = await this.componentModel.findByIdAndDelete(id);
-    if (!deleted) throw new NotFoundException('Componente no encontrado');
-    return deleted;
+    const component = await this.componentModel.findById(id);
+    if (!component) throw new NotFoundException('Componente no encontrado');
+
+    if (component.components.length > 0) {
+      throw new BadRequestException('No se puede eliminar un componente que tiene subcomponentes.');
+    }
+    if (component.parent){
+      const parentComponent = await this.componentModel.findById(component.parent);
+      if (parentComponent) {
+        const index = parentComponent.components.indexOf(component._id);
+        if (index > -1) {
+          parentComponent.components.splice(index, 1);
+          await parentComponent.save();
+        }
+      }
+    }
+    
+    await this.componentModel.deleteOne({ _id: id });
+    return {
+    message: 'Componente eliminado exitosamente',
+    componentId: id,
+    };
   }
 
   async addDescription(componentId: string, dto: CreateDescriptionDto) {
@@ -105,7 +137,7 @@ export class ComponentService {
     if (!component) throw new NotFoundException('Componente no encontrado');
 
     const subComponent = await this.create(dto);
-    subComponent.isSubComponent = true;
+    subComponent.parent = component._id;
     await subComponent.save();
     component.components.push(subComponent._id);
     await component.save();
@@ -113,33 +145,49 @@ export class ComponentService {
     return subComponent;
   }
 
-  async associateChildComponent(parentId: string, childId: string) {
-    const parent = await this.componentModel.findById(parentId);
-    if (!parent) throw new NotFoundException('Componente no encontrado');
+  async associateChildComponent(componentId: string, subComponentId: string) {
+    const component = await this.componentModel.findById(componentId);
+    if (!component) throw new NotFoundException('Componente no encontrado');
 
-    const child = await this.componentModel.findById(childId);
-    if (!child) throw new NotFoundException('Subcomponente no encontrado');
+    const subComponent = await this.componentModel.findById(subComponentId);
+    if (!subComponent) throw new NotFoundException('Subcomponente no encontrado');
 
-    if (child.isSubComponent) {
+    if (subComponent.parent) {
       throw new Error('Este componente ya está asociado como subcomponente de otro.');
     }
 
-    const alreadyAssociated = parent.components.some(
-      (compId) => compId.toString() === childId
+    const alreadyAssociated = component .components.some(
+      (compId) => compId.toString() === subComponentId
     );
 
     if (!alreadyAssociated) {
-      parent.components.push(child._id);
-      await parent.save();
+      subComponent.parent = component._id;
+      await subComponent.save();
 
-      child.isSubComponent = true;
-      await child.save();
+      component.components.push(subComponent._id);
+      await component.save();
     }
 
     return this.componentModel
-      .findById(parent._id)
+      .findById(component._id)
       .populate('components')
       .populate('descriptions');
+  }
+
+  async disassociateChildComponent(componentId: string, subComponentId: string) {
+    const component = await this.componentModel.findById(componentId);
+    if (!component) throw new NotFoundException('Componente no encontrado');
+
+    const subComponent = await this.componentModel.findById(subComponentId);
+    if (!subComponent) throw new NotFoundException('Subcomponente no encontrado');
+
+    const index = component.components.indexOf(subComponent._id);
+    if (index > -1) {
+      component.components.splice(index, 1);
+      await component.save();
+    }
+    subComponent.parent = null;
+    await subComponent.save();
   }
 }
 

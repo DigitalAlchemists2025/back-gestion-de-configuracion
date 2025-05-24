@@ -61,4 +61,12 @@ export class ComponentController {
   ) {
   return this.componentService.associateChildComponent(parentId, childId);
   }
+
+  @Post(':id/disassociate/:childId')
+  async disassociateChild(
+    @Param('id') parentId: string,
+    @Param('childId') childId: string
+  ) {
+    return this.componentService.disassociateChildComponent(parentId, childId);
+  }
 }

@@ -9,7 +9,7 @@ import { DescriptionSchema } from 'src/descriptions/schema/description.schema';
   imports: [
     MongooseModule.forFeature([
       { name: 'Component', schema: ComponentSchema },
-      { name: 'Description', schema: DescriptionSchema }
+      { name: 'Description', schema: DescriptionSchema },
     ]),
   ],
   controllers: [ComponentController],
