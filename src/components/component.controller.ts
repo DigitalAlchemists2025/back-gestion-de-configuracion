@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { ComponentService } from './component.service';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
@@ -14,8 +14,9 @@ export class ComponentController {
   constructor(private readonly componentService: ComponentService) {}
 
   @Post()
-  create(@Body() dto: CreateComponentDto) {
-    return this.componentService.create(dto);
+  create(@Body() dto: CreateComponentDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.create(dto, userId);
   }
 
   @Get()
@@ -47,11 +48,9 @@ export class ComponentController {
   }
 
   @Post(':id/components')
-  async addSubComponent(
-    @Param('id') componentId: string,
-    @Body() dto: CreateComponentDto,
-  ) {
-    return this.componentService.addSubComponent(componentId, dto);
+  async addSubComponent(@Param('id') componentId: string, @Body() dto: CreateComponentDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.addSubComponent(componentId, dto, userId);
   }
 
   @Post(':id/associate/:childId')

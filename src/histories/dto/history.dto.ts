@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsMongoId, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsMongoId, IsOptional } from 'class-validator';
 
 export class HistoryDto {
   @ApiProperty()
@@ -13,6 +13,7 @@ export class HistoryDto {
   user_id: string;
 
   @ApiProperty()
+  @IsOptional()
   date: Date;
 
   @ApiProperty()

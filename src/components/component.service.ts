@@ -6,15 +6,17 @@ import { UpdateComponentDto } from './dto/update-component.dto';
 import { Component } from 'src/common/interfaces/component.interface';
 import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
 import { Description } from 'src/common/interfaces/description.interface';
+import { HistoryService } from 'src/histories/history.service';
 
 @Injectable()
 export class ComponentService {
   constructor(
     @InjectModel('Component') private readonly componentModel: Model<Component>,
     @InjectModel('Description') private readonly descriptionModel: Model<Description>,
+    private readonly historyService: HistoryService,
   ) {}
 
-  async create(dto: CreateComponentDto) {
+  async create(dto: CreateComponentDto, userId: string) {
     const { descriptions, ...rest } = dto;
 
     const component = new this.componentModel({
@@ -30,6 +32,13 @@ export class ComponentService {
       }
       await component.save();
     }
+
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      date: new Date(),
+      action: 'Creación de componente', 
+    });
 
     return this.componentModel
       .findById(component._id)
@@ -132,11 +141,11 @@ export class ComponentService {
     return newDescription;
   }
 
-  async addSubComponent(componentId: string, dto: CreateComponentDto) {
+  async addSubComponent(componentId: string, dto: CreateComponentDto, userid: string) {
     const component = await this.componentModel.findById(componentId).exec();
     if (!component) throw new NotFoundException('Componente no encontrado');
 
-    const subComponent = await this.create(dto);
+    const subComponent = await this.create(dto, userid);
     subComponent.parent = component._id;
     await subComponent.save();
     component.components.push(subComponent._id);

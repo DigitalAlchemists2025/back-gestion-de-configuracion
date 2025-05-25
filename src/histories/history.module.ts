@@ -15,6 +15,7 @@ import { UserSchema } from 'src/users/schema/user.schema';
     ]),
   ],
   controllers: [HistoryController],
+  exports: [HistoryService],
   providers: [HistoryService],
 })
 export class HistoryModule {}
