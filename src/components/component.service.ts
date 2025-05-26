@@ -33,11 +33,13 @@ export class ComponentService {
       await component.save();
     }
 
+
     await this.historyService.create({
       user_id: userId,
       component_id: component._id.toString(),
-      date: new Date(),
-      action: 'Creación de componente', 
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Crear componente',
     });
 
     return this.componentModel
@@ -62,15 +64,24 @@ export class ComponentService {
     return found;
   }
 
-  async update(id: string, dto: UpdateComponentDto) {
+  async update(id: string, dto: UpdateComponentDto, userId: string) {
     const component = await this.componentModel.findById(id);
     if (!component) throw new NotFoundException('Componente no encontrado');
 
-    if (dto.name) component.name = dto.name;
-    if (dto.type) component.type = dto.type;
-    if (dto.status) component.status = dto.status as 'activo' | 'de baja';
-    if (dto.components) {
-      component.components = dto.components.map(id => new Types.ObjectId(id));
+    const original = { ...component.toObject() };
+    const changes: Record<string, any> = {};
+
+    if (dto.name && dto.name !== original.name) {
+      component.name = dto.name;
+      changes.name = { before: original.name, after: dto.name };
+    }
+    if (dto.type && dto.type !== original.type) {
+      component.type = dto.type;
+      changes.type = { before: original.type, after: dto.type };
+    }
+    if (dto.status && dto.status !== original.status) {
+      component.status = dto.status as 'activo' | 'de baja';
+      changes.status = { before: original.status, after: dto.status };
     }
 
     if (dto.descriptions && Array.isArray(dto.descriptions)) {
@@ -80,24 +91,18 @@ export class ComponentService {
         newDescIds.push(created._id);
       }
       component.descriptions = newDescIds;
-    }
-
-    if(dto.parent) {
-      if (dto.parent === id) {
-        throw new BadRequestException('Un componente no puede ser su propio padre.');
-      }
-      if (dto.parent === null) {
-        component.parent = null;
-      } else {
-        const parentComponent = await this.componentModel.findById(dto.parent);
-        if (!parentComponent) {
-          throw new NotFoundException('Componente padre no encontrado');
-        }
-        component.parent = parentComponent._id;
-      }
+      changes.descriptions = 'Descripciones reemplazadas';
     }
 
     await component.save();
+
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Editar componente',
+    });
 
     return this.componentModel
       .findById(component._id)
@@ -105,7 +110,7 @@ export class ComponentService {
       .populate('components');
   }
 
-  async delete(id: string) {
+  async delete(id: string, userId: string) {
     const component = await this.componentModel.findById(id);
     if (!component) throw new NotFoundException('Componente no encontrado');
 
@@ -113,15 +118,16 @@ export class ComponentService {
       throw new BadRequestException('No se puede eliminar un componente que tiene subcomponentes.');
     }
     if (component.parent){
-      const parentComponent = await this.componentModel.findById(component.parent);
-      if (parentComponent) {
-        const index = parentComponent.components.indexOf(component._id);
-        if (index > -1) {
-          parentComponent.components.splice(index, 1);
-          await parentComponent.save();
-        }
-      }
+      await this.disassociateChildComponent(component.parent.toString(), component._id.toString(), userId);
     }
+
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Eliminar componente',
+    });
     
     await this.componentModel.deleteOne({ _id: id });
     return {
@@ -151,10 +157,21 @@ export class ComponentService {
     component.components.push(subComponent._id);
     await component.save();
 
+    await this.historyService.create({
+      user_id: userid,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Asociar subcomponente',
+      subcomponent_id: subComponent._id.toString(),
+      subcomponent_name: subComponent.name,
+      subcomponent_type: subComponent.type,
+    });
+
     return subComponent;
   }
 
-  async associateChildComponent(componentId: string, subComponentId: string) {
+  async associateChildComponent(componentId: string, subComponentId: string, userid: string) {
     const component = await this.componentModel.findById(componentId);
     if (!component) throw new NotFoundException('Componente no encontrado');
 
@@ -177,13 +194,24 @@ export class ComponentService {
       await component.save();
     }
 
+    await this.historyService.create({
+      user_id: userid,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Asociar subcomponente',
+      subcomponent_id: subComponent._id.toString(),
+      subcomponent_name: subComponent.name,
+      subcomponent_type: subComponent.type,
+    });
+
     return this.componentModel
       .findById(component._id)
       .populate('components')
       .populate('descriptions');
   }
 
-  async disassociateChildComponent(componentId: string, subComponentId: string) {
+  async disassociateChildComponent(componentId: string, subComponentId: string, userid: string) {
     const component = await this.componentModel.findById(componentId);
     if (!component) throw new NotFoundException('Componente no encontrado');
 
@@ -196,6 +224,18 @@ export class ComponentService {
       await component.save();
     }
     subComponent.parent = null;
+
+    await this.historyService.create({
+      user_id: userid,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Desasociar subcomponente',
+      subcomponent_id: subComponent._id.toString(),
+      subcomponent_name: subComponent.name,
+      subcomponent_type: subComponent.type,
+    });
+
     await subComponent.save();
   }
 }

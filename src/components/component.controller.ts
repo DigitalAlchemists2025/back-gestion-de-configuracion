@@ -30,13 +30,15 @@ export class ComponentController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateComponentDto) {
-    return this.componentService.update(id, dto);
+  update(@Param('id') id: string, @Body() dto: UpdateComponentDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.update(id, dto, userId);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.componentService.delete(id);
+  delete(@Param('id') id: string, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.delete(id, userId);
   }
 
   @Post(':id/descriptions')
@@ -54,18 +56,14 @@ export class ComponentController {
   }
 
   @Post(':id/associate/:childId')
-  async associateChild(
-    @Param('id') parentId: string,
-    @Param('childId') childId: string
-  ) {
-  return this.componentService.associateChildComponent(parentId, childId);
+  async associateChild(@Param('id') parentId: string, @Param('childId') childId: string, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.associateChildComponent(parentId, childId, userId);
   }
 
   @Post(':id/disassociate/:childId')
-  async disassociateChild(
-    @Param('id') parentId: string,
-    @Param('childId') childId: string
-  ) {
-    return this.componentService.disassociateChildComponent(parentId, childId);
+  async disassociateChild(@Param('id') parentId: string, @Param('childId') childId: string, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.disassociateChildComponent(parentId, childId, userId);
   }
 }

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsMongoId, IsOptional } from 'class-validator';
 
 export class HistoryDto {
@@ -8,16 +8,37 @@ export class HistoryDto {
   component_id: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  component_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  component_type: string;
+
+  @ApiProperty()
   @IsMongoId()
   @IsNotEmpty()
   user_id: string;
 
   @ApiProperty()
-  @IsOptional()
-  date: Date;
-
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   action: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsMongoId()
+  subcomponent_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  subcomponent_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  subcomponent_type?: string;
 }
