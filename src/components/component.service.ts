@@ -91,7 +91,6 @@ export class ComponentService {
         newDescIds.push(created._id);
       }
       component.descriptions = newDescIds;
-      changes.descriptions = 'Descripciones reemplazadas';
     }
 
     await component.save();
@@ -102,6 +101,7 @@ export class ComponentService {
       component_name: component.name,
       component_type: component.type,
       action: 'Editar componente',
+      details: changes,
     });
 
     return this.componentModel

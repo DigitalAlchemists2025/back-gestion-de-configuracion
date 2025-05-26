@@ -41,4 +41,8 @@ export class HistoryDto {
   @IsOptional()
   @IsString()
   subcomponent_type?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  details?: Record<string, any>;
 }

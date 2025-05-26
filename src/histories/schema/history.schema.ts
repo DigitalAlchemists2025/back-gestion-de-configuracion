@@ -11,6 +11,7 @@ export const HistorySchema = new mongoose.Schema(
     subcomponent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Component', default: null, },
     subcomponent_name: { type: String, default: null, },
     subcomponent_type: { type: String, default: null, },
+    details: { type: mongoose.Schema.Types.Mixed, default: {} },
   },
   { timestamps: true },
 );
