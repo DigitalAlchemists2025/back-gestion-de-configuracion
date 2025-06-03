@@ -12,10 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('users')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
@@ -38,12 +40,14 @@ export class UsersController {
     return this.userService.findOne(id);
   }
 
+  @Roles('administrador')
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar' })
   update(@Param('id') id: string, @Body() userDTO: UserDTO) {
     return this.userService.update(id, userDTO);
   }
 
+  @Roles('administrador')
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar' })
   delete(@Param('id') id: string) {
