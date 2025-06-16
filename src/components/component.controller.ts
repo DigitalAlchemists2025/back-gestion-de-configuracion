@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Request, Query } from '@nestjs/common';
 import { ComponentService } from './component.service';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
@@ -25,6 +25,11 @@ export class ComponentController {
   @Get()
   findAll() {
     return this.componentService.findAll();
+  }
+
+  @Get('search')
+  searchComponents(@Query('q') query: string) {
+    return this.componentService.searchComponents(query);
   }
 
   @Get(':id')

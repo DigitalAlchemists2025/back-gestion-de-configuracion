@@ -19,11 +19,19 @@ export class HistoryController {
     return this.historyService.create(dto);
   }
 
+  @Roles('administrador')
   @Get()
   findAll() {
     return this.historyService.findAll();
   }
 
+  @Get('/components/:id')
+  @Roles('administrador')
+  findByComponentId(@Param('id') id: string) {
+    return this.historyService.findByComponentId(id);
+  }
+
+  @Roles('administrador')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.historyService.findOne(id);

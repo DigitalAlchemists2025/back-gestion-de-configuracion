@@ -24,6 +24,14 @@ export class HistoryService {
     return history;
   }
 
+  async findByComponentId(componentId: string) {
+    const histories = await this.historyModel.find({ component_id: componentId }).populate('component_id user_id').exec();
+    if (!histories || histories.length === 0) {
+      throw new NotFoundException('No histories found for this component');
+    }
+    return histories;
+  }
+
   async update(id: string, data: HistoryDto) {
     const updated = await this.historyModel.findByIdAndUpdate(id, data, {
       new: true,

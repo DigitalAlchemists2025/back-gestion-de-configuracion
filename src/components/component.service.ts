@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
-import { Component } from 'src/common/interfaces/component.interface';
+import { Component, PopulatedComponent } from 'src/common/interfaces/component.interface';
 import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
 import { Description } from 'src/common/interfaces/description.interface';
 import { HistoryService } from 'src/histories/history.service';
@@ -48,7 +48,7 @@ export class ComponentService {
       .populate('components');
   }
 
-  findAll() {
+  async findAll() {
     return this.componentModel
       .find()
       .populate('descriptions')
@@ -62,6 +62,31 @@ export class ComponentService {
       .populate('components');
     if (!found) throw new NotFoundException('Componente no encontrado');
     return found;
+  }
+
+  async searchComponents(query: string) {
+    const terms = query.toLowerCase().split(' ').filter(Boolean);
+
+    const components = await this.componentModel
+      .find()
+      .populate('descriptions')
+      .populate('components')
+      .exec();
+
+    const populated = components as unknown as PopulatedComponent[];
+
+    return populated.filter(component => {
+      const valuesToSearch = [
+        component.name,
+        component.type,
+        ...component.descriptions.map(d => `${d.name} ${d.description}`),
+        ...component.components.map(c => c.name),
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return terms.every(term => valuesToSearch.includes(term));
+    });
   }
 
   async update(id: string, dto: UpdateComponentDto, userId: string) {
