@@ -53,11 +53,23 @@ export class ComponentController {
 
   @Roles('administrador')
   @Post(':id/descriptions')
-  async addDescription(
-    @Param('id') componentId: string,
-    @Body() dto: CreateDescriptionDto,
-  ) {
-    return this.componentService.addDescription(componentId, dto);
+  async addDescription(@Param('id') componentId: string, @Body() dto: CreateDescriptionDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.addDescription(componentId, dto, userId);
+  }
+
+  @Roles('administrador')
+  @Delete(':id/descriptions/:id_description')
+  async removeDescription(@Param('id') componentId: string, @Param('id_description') descriptionId: string, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.removeDescription(componentId, descriptionId, userId);
+  }
+
+  @Roles('administrador')
+  @Put(':id/descriptions/:id_description')
+  async updateDescription(@Param('id') componentId: string, @Param('id_description') descriptionId: string, @Body() dto: CreateDescriptionDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.componentService.updateDescription(componentId, descriptionId, dto, userId);
   }
 
   @Roles('administrador')

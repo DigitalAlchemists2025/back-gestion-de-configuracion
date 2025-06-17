@@ -9,41 +9,36 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @ApiTags('histories')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador')
 @Controller('histories')
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 
-  @Roles('administrador')
   @Post()
   create(@Body() dto: HistoryDto) {
     return this.historyService.create(dto);
   }
 
-  @Roles('administrador')
   @Get()
   findAll() {
     return this.historyService.findAll();
   }
 
   @Get('/components/:id')
-  @Roles('administrador')
   findByComponentId(@Param('id') id: string) {
     return this.historyService.findByComponentId(id);
   }
 
-  @Roles('administrador')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.historyService.findOne(id);
   }
 
-  @Roles('administrador')
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: HistoryDto) {
     return this.historyService.update(id, dto);
   }
 
-  @Roles('administrador')
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.historyService.delete(id);

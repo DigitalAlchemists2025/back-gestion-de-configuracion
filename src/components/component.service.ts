@@ -161,7 +161,7 @@ export class ComponentService {
     };
   }
 
-  async addDescription(componentId: string, dto: CreateDescriptionDto) {
+  async addDescription(componentId: string, dto: CreateDescriptionDto, userId: string) {
     const component = await this.componentModel.findById(componentId).exec();
     if (!component) throw new NotFoundException('Componente no encontrado');
 
@@ -169,7 +169,70 @@ export class ComponentService {
     component.descriptions.push(newDescription._id);
     await component.save();
 
-    return newDescription;
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Agregar descripción',
+      details: {
+        descripcion_agregada: dto,
+      },
+    });
+  }
+
+  async removeDescription(componentId: string, descriptionId: string, userId: string) {
+    const component = await this.componentModel.findById(componentId).exec();
+    if (!component) throw new NotFoundException('Componente no encontrado');  
+
+    const index = component.descriptions.findIndex(
+      (id) => id.toString() === descriptionId,
+    );
+    if (index === -1) throw new NotFoundException('Descripción no asociada al componente');
+    
+    component.descriptions.splice(index, 1);
+    await component.save();
+
+    const deleted = await this.descriptionModel.findByIdAndDelete(descriptionId);
+
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Eliminar descripción',
+      details: {
+        descripcion_eliminada: deleted,
+      },
+    });
+  }
+
+  async updateDescription(componentId: string, descriptionId: string, dto: CreateDescriptionDto, userId: string) {
+    const component = await this.componentModel.findById(componentId);
+    if (!component) throw new NotFoundException('Componente no encontrado');
+
+    const description = await this.descriptionModel.findById(descriptionId);
+    if (!description) throw new NotFoundException('Descripción no encontrada');
+
+    const original = { name: description.name, description: description.description };
+
+    description.name = dto.name;
+    description.description = dto.description;
+    await description.save();
+
+    await this.historyService.create({
+      user_id: userId,
+      component_id: component._id.toString(),
+      component_name: component.name,
+      component_type: component.type,
+      action: 'Editar descripción',
+      details: {
+        antes: original,
+        despues: dto,
+      },
+    });
+
+    return description;
   }
 
   async addSubComponent(componentId: string, dto: CreateComponentDto, userid: string) {
