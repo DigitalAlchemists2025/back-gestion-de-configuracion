@@ -10,12 +10,12 @@ export class DescriptionService {
     @InjectModel('Description') private readonly descriptionModel: Model<any>,
   ) {}
 
-  create(dto: CreateDescriptionDto) {
+  async create(dto: CreateDescriptionDto) {
     const newDesc = new this.descriptionModel(dto);
     return newDesc.save();
   }
 
-  findAll() {
+  async findAll() {
     return this.descriptionModel.find();
   }
 

@@ -2,6 +2,10 @@ import { IsString, IsOptional, IsMongoId, IsArray, IsIn, ValidateNested, IsBoole
 import { Type } from 'class-transformer';
 
 class InlineDescriptionDto {
+  @IsOptional()
+  @IsMongoId()
+  _id?: string;
+
   @IsString()
   name: string;
 

@@ -5,14 +5,14 @@ import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { Component, PopulatedComponent } from 'src/common/interfaces/component.interface';
 import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
-import { Description } from 'src/common/interfaces/description.interface';
 import { HistoryService } from 'src/histories/history.service';
+import { DescriptionService } from 'src/descriptions/description.service';
 
 @Injectable()
 export class ComponentService {
   constructor(
     @InjectModel('Component') private readonly componentModel: Model<Component>,
-    @InjectModel('Description') private readonly descriptionModel: Model<Description>,
+    private readonly descriptionService: DescriptionService,
     private readonly historyService: HistoryService,
   ) {}
 
@@ -27,18 +27,17 @@ export class ComponentService {
 
     if (descriptions && descriptions.length > 0) {
       for (const descDto of descriptions) {
-        const newDescription = await this.descriptionModel.create(descDto);
+        const newDescription = await this.descriptionService.create(descDto);
         component.descriptions.push(newDescription._id);
       }
       await component.save();
     }
 
-
     await this.historyService.create({
       user_id: userId,
       component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
+      component_name: component.name.toString(),
+      component_type: component.type.toString(),
       action: 'Crear componente',
     });
 
@@ -90,7 +89,10 @@ export class ComponentService {
   }
 
   async update(id: string, dto: UpdateComponentDto, userId: string) {
-    const component = await this.componentModel.findById(id);
+    const component = await this.componentModel
+      .findById(id)
+      .populate('descriptions');
+
     if (!component) throw new NotFoundException('Componente no encontrado');
 
     const original = { ...component.toObject() };
@@ -109,13 +111,59 @@ export class ComponentService {
       changes.status = { before: original.status, after: dto.status };
     }
 
-    if (dto.descriptions && Array.isArray(dto.descriptions)) {
-      const newDescIds: Types.ObjectId[] = [];
-      for (const descDto of dto.descriptions) {
-        const created = await this.descriptionModel.create(descDto);
-        newDescIds.push(created._id);
+    if (dto.descriptions) {
+      const originalDescs = component.descriptions as any[];
+      const updatedDescs = dto.descriptions;
+
+      const newIds: Types.ObjectId[] = [];
+      const descriptionChanges = { edited: [], added: [], deleted: [] };
+
+      for (const desc of updatedDescs) {
+        if (desc._id) {
+          const original = originalDescs.find(d => d._id.toString() === desc._id);
+          if (original) {
+            const change = original.name !== desc.name || original.description !== desc.description;
+            if (change) {
+              descriptionChanges.edited.push({
+                _id: original._id.toString(),
+                before: { name: original.name, description: original.description },
+                after: { name: desc.name, description: desc.description },
+              });
+              await this.descriptionService.update(original._id, desc);
+            }
+            newIds.push(original._id);
+          }
+        } else {
+          const newDescription = await this.descriptionService.create(desc);
+          descriptionChanges.added.push({
+            _id: newDescription._id.toString(),
+            name: newDescription.name,
+            description: newDescription.description,
+          });
+          newIds.push(newDescription._id);
+        }
       }
-      component.descriptions = newDescIds;
+
+      for (const original of originalDescs) {
+        if (!newIds.some(id => id.toString() === original._id.toString())) {
+          descriptionChanges.deleted.push({
+            _id: original._id.toString(),
+            name: original.name,
+            description: original.description,
+          });
+          await this.descriptionService.delete(original._id);
+        }
+      }
+
+      component.descriptions = newIds;
+
+      if (
+        descriptionChanges.edited.length > 0 ||
+        descriptionChanges.added.length > 0 ||
+        descriptionChanges.deleted.length > 0
+      ) {
+        changes.descriptions = descriptionChanges;
+      }
     }
 
     await component.save();
@@ -123,8 +171,8 @@ export class ComponentService {
     await this.historyService.create({
       user_id: userId,
       component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
+      component_name: component.name.toString(),
+      component_type: component.type.toString(),
       action: 'Editar componente',
       details: changes,
     });
@@ -149,8 +197,8 @@ export class ComponentService {
     await this.historyService.create({
       user_id: userId,
       component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
+      component_name: component.name.toString(),
+      component_type: component.type.toString(),
       action: 'Eliminar componente',
     });
     
@@ -161,79 +209,6 @@ export class ComponentService {
     };
   }
 
-  async addDescription(componentId: string, dto: CreateDescriptionDto, userId: string) {
-    const component = await this.componentModel.findById(componentId).exec();
-    if (!component) throw new NotFoundException('Componente no encontrado');
-
-    const newDescription = await this.descriptionModel.create(dto);
-    component.descriptions.push(newDescription._id);
-    await component.save();
-
-    await this.historyService.create({
-      user_id: userId,
-      component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
-      action: 'Agregar descripción',
-      details: {
-        descripcion_agregada: dto,
-      },
-    });
-  }
-
-  async removeDescription(componentId: string, descriptionId: string, userId: string) {
-    const component = await this.componentModel.findById(componentId).exec();
-    if (!component) throw new NotFoundException('Componente no encontrado');  
-
-    const index = component.descriptions.findIndex(
-      (id) => id.toString() === descriptionId,
-    );
-    if (index === -1) throw new NotFoundException('Descripción no asociada al componente');
-    
-    component.descriptions.splice(index, 1);
-    await component.save();
-
-    const deleted = await this.descriptionModel.findByIdAndDelete(descriptionId);
-
-    await this.historyService.create({
-      user_id: userId,
-      component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
-      action: 'Eliminar descripción',
-      details: {
-        descripcion_eliminada: deleted,
-      },
-    });
-  }
-
-  async updateDescription(componentId: string, descriptionId: string, dto: CreateDescriptionDto, userId: string) {
-    const component = await this.componentModel.findById(componentId);
-    if (!component) throw new NotFoundException('Componente no encontrado');
-
-    const description = await this.descriptionModel.findById(descriptionId);
-    if (!description) throw new NotFoundException('Descripción no encontrada');
-
-    const original = { name: description.name, description: description.description };
-
-    description.name = dto.name;
-    description.description = dto.description;
-    await description.save();
-
-    await this.historyService.create({
-      user_id: userId,
-      component_id: component._id.toString(),
-      component_name: component.name,
-      component_type: component.type,
-      action: 'Editar descripción',
-      details: {
-        antes: original,
-        despues: dto,
-      },
-    });
-
-    return description;
-  }
 
   async addSubComponent(componentId: string, dto: CreateComponentDto, userid: string) {
     const component = await this.componentModel.findById(componentId).exec();
