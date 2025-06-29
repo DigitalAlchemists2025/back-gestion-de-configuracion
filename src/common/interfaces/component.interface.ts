@@ -1,5 +1,4 @@
 import { Document, Types } from 'mongoose';
-import { Description } from './description.interface';
 
 export interface Component extends Document {
   _id: Types.ObjectId;

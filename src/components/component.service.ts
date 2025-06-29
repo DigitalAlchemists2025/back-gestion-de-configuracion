@@ -4,7 +4,6 @@ import { Model, Types } from 'mongoose';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { Component, PopulatedComponent } from 'src/common/interfaces/component.interface';
-import { CreateDescriptionDto } from 'src/descriptions/dto/create-description.dto';
 import { HistoryService } from 'src/histories/history.service';
 import { DescriptionService } from 'src/descriptions/description.service';
 
@@ -16,6 +15,11 @@ export class ComponentService {
     private readonly historyService: HistoryService,
   ) {}
 
+  /* 
+  Se crea un nuevo componente.
+  Si se proporcionan descripciones, se crean y asocian al componente.
+  Se registra la acción en el historial y se retorna el componente.
+  */
   async create(dto: CreateComponentDto, userId: string) {
     const { descriptions, ...rest } = dto;
 
@@ -63,6 +67,11 @@ export class ComponentService {
     return found;
   }
 
+  /* 
+  Filtra los componentes por los términos de búsqueda proporcionados.
+  Se busca en el nombre, tipo, descripciones y subcomponentes.
+  Retorna los componentes que coinciden con todos los términos.
+  */
   async searchComponents(query: string) {
     const terms = query.toLowerCase().split(' ').filter(Boolean);
 
@@ -88,6 +97,11 @@ export class ComponentService {
     });
   }
 
+  /* 
+  Actualiza un componente existente.
+  Si hay un cambio las descripciones, se crean, actualizan o eliminan según corresponda.
+  Se registra la acción en el historial y se retorna el componente actualizado.
+  */
   async update(id: string, dto: UpdateComponentDto, userId: string) {
     const component = await this.componentModel
       .findById(id)
@@ -120,7 +134,7 @@ export class ComponentService {
 
       for (const desc of updatedDescs) {
         if (desc._id) {
-          const original = originalDescs.find(d => d._id.toString() === desc._id);
+          const original = originalDescs.find(d => d._id.toString() === desc._id.toString());
           if (original) {
             const change = original.name !== desc.name || original.description !== desc.description;
             if (change) {
@@ -157,11 +171,8 @@ export class ComponentService {
 
       component.descriptions = newIds;
 
-      if (
-        descriptionChanges.edited.length > 0 ||
-        descriptionChanges.added.length > 0 ||
-        descriptionChanges.deleted.length > 0
-      ) {
+      if (descriptionChanges.edited.length > 0 || descriptionChanges.added.length > 0 ||
+      descriptionChanges.deleted.length > 0) {
         changes.descriptions = descriptionChanges;
       }
     }
@@ -183,6 +194,12 @@ export class ComponentService {
       .populate('components');
   }
 
+  /* 
+  Elimina un componente.
+  Si el componente tiene subcomponentes, no se puede eliminar.
+  Si el componente tiene un padre, se desasocia de él.
+  Se registra la acción en el historial y se retorna un mensaje de éxito.
+  */
   async delete(id: string, userId: string) {
     const component = await this.componentModel.findById(id);
     if (!component) throw new NotFoundException('Componente no encontrado');
@@ -209,7 +226,11 @@ export class ComponentService {
     };
   }
 
-
+  /* 
+  Agrega un nuevo subcomponente nuevo a un componente.
+  Crea el subcomponente y lo asocia al componente padre.
+  Registra la acción en el historial y retorna el subcomponente creado.
+  */
   async addSubComponent(componentId: string, dto: CreateComponentDto, userid: string) {
     const component = await this.componentModel.findById(componentId).exec();
     if (!component) throw new NotFoundException('Componente no encontrado');
@@ -234,6 +255,12 @@ export class ComponentService {
     return subComponent;
   }
 
+  /* 
+  Asocia un subcomponente existente a un componente.
+  Verifica que el subcomponente no esté ya asociado a otro componente.
+  Si no está asociado, lo asocia al componente y actualiza el componente.
+  Registra la acción en el historial y retorna el componente actualizado.
+  */
   async associateChildComponent(componentId: string, subComponentId: string, userid: string) {
     const component = await this.componentModel.findById(componentId);
     if (!component) throw new NotFoundException('Componente no encontrado');
@@ -274,6 +301,12 @@ export class ComponentService {
       .populate('descriptions');
   }
 
+  /* 
+  Desasocia un subcomponente de un componente.
+  Verifica que el componente y el subcomponente existan.
+  Si el subcomponente está asociado al componente, lo elimina de la lista de subcomponentes.
+  Registra la acción en el historial y actualiza el subcomponente.
+  */
   async disassociateChildComponent(componentId: string, subComponentId: string, userid: string) {
     const component = await this.componentModel.findById(componentId);
     if (!component) throw new NotFoundException('Componente no encontrado');
@@ -302,4 +335,3 @@ export class ComponentService {
     await subComponent.save();
   }
 }
-

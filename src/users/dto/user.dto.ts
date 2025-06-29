@@ -18,10 +18,7 @@ export class UserDTO {
   @IsString()
   readonly password: string;
 
-  @ApiProperty({
-    enum: ['usuario', 'administrador'],
-    default: 'usuario',
-  })
+  @ApiProperty({ enum: ['usuario', 'administrador'], default: 'usuario' })
   @IsOptional()
   @IsString()
   @IsIn(['usuario', 'administrador']) 

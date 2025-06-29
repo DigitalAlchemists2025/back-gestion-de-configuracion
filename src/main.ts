@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionFilter());
   app.useGlobalInterceptors(new TimeOutInterceptor());
   app.useGlobalPipes(new ValidationPipe());
-  // Configurar CORS usando el middleware
+
   app.use(cors({
     origin: [process.env.FRONT_URL, process.env.FRONT_MOVIL_URL],
     methods: ['GET', 'POST','PUT','DELETE', 'PATCH'],
@@ -20,10 +20,16 @@ async function bootstrap() {
   }));
 
   const options = new DocumentBuilder()
-    .setTitle('Proyección API')
-    .setDescription('Proyecto Minutas App')
+    .setTitle('API de Componentes')
+    .setDescription('Documentación de la API para la gestión de componentes')
     .setVersion('1.0.0')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      in: 'header',
+    }, 'access-token')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

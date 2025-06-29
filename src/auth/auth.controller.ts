@@ -1,21 +1,21 @@
-import { Body, Controller, Post, Get, Req, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Req, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserDTO } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('signin')
+  @ApiOperation({ summary: 'Validar credenciales inicio de sesión'})
   async signIn(@Req() req) {
     return await this.authService.signIn(req.user);
   }
 
   @Post('signup')
+  @ApiOperation({ summary: 'Crear credenciales inicio de sesión'})
   async signUp(@Body() userDTO: UserDTO) {
     return await this.authService.signUp(userDTO);
   }
@@ -26,24 +26,16 @@ export class AuthController {
     let user: any;
     try {
       user = await this.authService.validateEmail(correo);
-    } catch {
-      console.log("EMAIL NO REGISTRADO")
+    } catch (error){
+      console.error("Email no registrado", error)
     } finally {
       if (!user) {
-        user = {
-          _id: '6807207a89cd891a98034975',
-          email: 'user@ucn.cl',
-          role: 'usuario',
-        };
+        user = await this.authService.validateEmail('user@ucn.cl')
       }
     }
 
     const { access_token, id } = await this.authService.signIn(user);
 
-    return {
-      access_token,
-      id,
-      role: user.role,
-    };
+    return { access_token, id, role: user.role };
   }
 }
