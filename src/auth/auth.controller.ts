@@ -4,18 +4,19 @@ import { UserDTO } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
-@UseGuards(LocalAuthGuard)
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('signin')
   @ApiOperation({ summary: 'Validar credenciales inicio de sesión'})
   async signIn(@Req() req) {
     return await this.authService.signIn(req.user);
   }
-
+  
+  @UseGuards(LocalAuthGuard)
   @Post('signup')
   @ApiOperation({ summary: 'Crear credenciales inicio de sesión'})
   async signUp(@Body() userDTO: UserDTO) {
