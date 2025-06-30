@@ -28,14 +28,14 @@ git clone https://github.com/DigitalAlchemists2025/back-gestion-de-configuracion
 # instalar dependencias
 npm install
 
-# configurar variables de entorno (.env)
-DB_URI=mongodb+srv://admin:digital2025.@gestiondeconfiguracion.u6d5j.mongodb.net/GestionDeConfiguracion?retryWrites=true&w=majority
-JWT_SECRET=remivichicoke
-EXPIRES_IN=300m
-APP_URL=http://localhost:3000
-FRONT_URL=http://localhost:3001
-FRONT_MOVIL_URL=exp://192.168.1.38:8081
-PORT=3000
+# configurar variables de entorno .env (Modificar los valores según configuración local o del servidor.)
+DB_URI=
+JWT_SECRET=
+EXPIRES_IN=
+APP_URL=
+FRONT_URL=
+FRONT_MOVIL_URL=
+PORT=
 
 # ejecutar base de datos e iniciar el servidor
 $ npm run start:dev
