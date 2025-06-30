@@ -6,20 +6,32 @@ Permite crear, editar, asociar y visualizar componentes, subcomponentes y sus ca
 Incluye control de acceso por roles (Administrador y Usuario), manejo jerárquico de componentes y registro completo de historial de acciones.
 
 ## Funcionalidades principales
+- Gestión de componentes: Crear, editar, asociar, desasociar, retirar y eliminar componentes (ej: Edificios, Salas, Equipos, etc.).
 
-Gestión de componentes: Crear, editar, asociar, desasociar, retirar y eliminar componentes (ej: Edificios, Salas, Equipos, etc.).
+- Asociación jerárquica: Permite asociar subcomponentes a componentes padres, validando restricciones de la jerarquía.
 
-Asociación jerárquica: Permite asociar subcomponentes a componentes padres, validando restricciones de la jerarquía.
+- Edición de características: Modificar datos como nombre, tipo, estado y descripciones.
 
-Edición de características: Modificar datos como nombre, tipo, estado y descripciones.
+- Control de acceso: Basado en roles (Administrador puede modificar, Usuario solo consulta).
 
-Control de acceso: Basado en roles (Administrador puede modificar, Usuario solo consulta).
+- Historial de acciones: Registro cronológico y detallado de todas las modificaciones y asociaciones realizadas.
 
-Historial de acciones: Registro cronológico y detallado de todas las modificaciones y asociaciones realizadas.
+- Documentación Swagger: Interfaz de prueba y exploración en /api/docs.
 
-Documentación Swagger: Interfaz de prueba y exploración en /api/docs.
+## Instalación Mongo DB local
 
-## Instalación
+Descargar MongoDB Community Edition:
+https://www.mongodb.com/try/download/community
+
+Seleccionar sistema operativo (Windows, macOS o Linux).
+
+Descargar el instalador y seguir las instrucciones, recomendado marcar la opción para instalar Mongo DB como servicio.
+
+Configurar la conexión en backend
+En el archivo .env usar:
+DB_URI=mongodb://localhost:27017/nombre-base-de-datos
+
+## Instalación Repositorio
 
 ```bash
 # clonar repositorio
@@ -37,11 +49,12 @@ FRONT_URL=
 FRONT_MOVIL_URL=
 PORT=
 
-# ejecutar base de datos e iniciar el servidor
+# iniciar el servidor
 $ npm run start:dev
 ```
 
 ## Uso y documentación de la API
+
 Se accede a la documentación Swagger en:
 http://localhost:3000/api/docs
 
@@ -56,9 +69,18 @@ Gestionar usuarios.
 ### Usuario:
 Solo puede visualizar componentes y jerarquía.
 
+## Estructura principal
+src/
+    auth/: Módulo de login, control de acceso y manejo de roles.
+    components/: Módulo para crear, editar y asociar componentes y subcomponentes.
+    histories/: Registra todos los cambios en el sistema.
+    users/: Gestión de usuarios del sistema.
+    descriptions/: Manejo de los atributos genéricos de los componentes.
+    common/: Recursos.
+
 ## Tecnologías utilizadas
-- NestJS
-- MongoDB (Mongoose)
-- TypeScript
-- JWT para autenticación
-- Swagger para documentación interactiva
+- NestJS.
+- MongoDB (Mongoose).
+- TypeScript.
+- JWT para autenticación.
+- Swagger para documentación interactiva.
