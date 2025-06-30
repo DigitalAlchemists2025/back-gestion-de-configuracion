@@ -70,13 +70,12 @@ Gestionar usuarios.
 Solo puede visualizar componentes y jerarquía.
 
 ## Estructura principal
-src/
-    auth/: Módulo de login, control de acceso y manejo de roles.
-    components/: Módulo para crear, editar y asociar componentes y subcomponentes.
-    histories/: Registra todos los cambios en el sistema.
-    users/: Gestión de usuarios del sistema.
-    descriptions/: Manejo de los atributos genéricos de los componentes.
-    common/: Recursos.
+src/auth/: Módulo de login, control de acceso y manejo de roles.
+src/components/: Módulo para crear, editar y asociar componentes y subcomponentes.
+src/histories/: Registra todos los cambios en el sistema.
+src/users/: Gestión de usuarios del sistema.
+src/descriptions/: Manejo de los atributos genéricos de los componentes.
+src/common/: Recursos.
 
 ## Tecnologías utilizadas
 - NestJS.
