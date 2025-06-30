@@ -1,4 +1,4 @@
-### Gestión de la Configuración de Componentes – Backend
+# Gestión de la Configuración de Componentes – Backend
 
 ## Descripción
 Backend para la Gestión de la Configuración de Componentes.
@@ -48,12 +48,12 @@ http://localhost:3000/api/docs
 Se pueden probar los endpoints, ver los modelos y cargar tokens Bearer para autenticación.
 
 ## Control de acceso por roles
-# Administrador:
+### Administrador:
 Puede visualizar, crear, editar, asociar, desasociar, retirar y eliminar componentes.
 Ver historial de componentes.
 Gestionar usuarios.
 
-# Usuario:
+### Usuario:
 Solo puede visualizar componentes y jerarquía.
 
 ## Tecnologías utilizadas
