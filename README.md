@@ -1,85 +1,64 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+### Gestión de la Configuración de Componentes – Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Descripción
+Backend para la Gestión de la Configuración de Componentes.
+Permite crear, editar, asociar y visualizar componentes, subcomponentes y sus características.
+Incluye control de acceso por roles (Administrador y Usuario), manejo jerárquico de componentes y registro completo de historial de acciones.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Funcionalidades principales
 
-## Description
+Gestión de componentes: Crear, editar, asociar, desasociar, retirar y eliminar componentes (ej: Edificios, Salas, Equipos, etc.).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Asociación jerárquica: Permite asociar subcomponentes a componentes padres, validando restricciones de la jerarquía.
 
-## Project setup
+Edición de características: Modificar datos como nombre, tipo, estado y descripciones.
+
+Control de acceso: Basado en roles (Administrador puede modificar, Usuario solo consulta).
+
+Historial de acciones: Registro cronológico y detallado de todas las modificaciones y asociaciones realizadas.
+
+Documentación Swagger: Interfaz de prueba y exploración en /api/docs.
+
+## Instalación
 
 ```bash
-$ npm install
-```
+# clonar repositorio
+git clone https://github.com/DigitalAlchemists2025/back-gestion-de-configuracion
 
-## Compile and run the project
+# instalar dependencias
+npm install
 
-```bash
-# development
-$ npm run start
+# configurar variables de entorno (.env)
+DB_URI=mongodb+srv://admin:digital2025.@gestiondeconfiguracion.u6d5j.mongodb.net/GestionDeConfiguracion?retryWrites=true&w=majority
+JWT_SECRET=remivichicoke
+EXPIRES_IN=300m
+APP_URL=http://localhost:3000
+FRONT_URL=http://localhost:3001
+FRONT_MOVIL_URL=exp://192.168.1.38:8081
+PORT=3000
 
-# watch mode
+# ejecutar base de datos e iniciar el servidor
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Run tests
+## Uso y documentación de la API
+Se accede a la documentación Swagger en:
+http://localhost:3000/api/docs
 
-```bash
-# unit tests
-$ npm run test
+Se pueden probar los endpoints, ver los modelos y cargar tokens Bearer para autenticación.
 
-# e2e tests
-$ npm run test:e2e
+## Control de acceso por roles
+# Administrador:
+Puede visualizar, crear, editar, asociar, desasociar, retirar y eliminar componentes.
+Ver historial de componentes.
+Gestionar usuarios.
 
-# test coverage
-$ npm run test:cov
-```
+# Usuario:
+Solo puede visualizar componentes y jerarquía.
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Tecnologías utilizadas
+- NestJS
+- MongoDB (Mongoose)
+- TypeScript
+- JWT para autenticación
+- Swagger para documentación interactiva
