@@ -52,11 +52,12 @@ PORT=
 # iniciar el servidor
 $ npm run start:dev
 ```
+El backend estará disponible en http://localhost:3000 (Según el puerto asignado en .env)
 
 ## Uso y documentación de la API
 
 Se accede a la documentación Swagger en:
-http://localhost:3000/api/docs
+http://localhost:3000/api/docs (Según el puerto asignado en .env)
 
 Se pueden probar los endpoints, ver los modelos y cargar tokens Bearer para autenticación.
 
@@ -83,3 +84,6 @@ Solo puede visualizar componentes y jerarquía.
 - TypeScript.
 - JWT para autenticación.
 - Swagger para documentación interactiva.
+
+## Contacto
+Para cualquier duda o consulta, contactar al equipo DigitalAlchemists a través del correo digitalAlchemists2025@gmail.com
