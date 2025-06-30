@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { UpdateUserDTO } from './dto/updateUser.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')
