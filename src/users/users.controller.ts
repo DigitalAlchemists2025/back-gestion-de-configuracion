@@ -5,6 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UpdateUserDTO } from './dto/updateUser.dto';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')
@@ -34,7 +35,7 @@ export class UsersController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar usuario por ID' })
-  update(@Param('id') id: string, @Body() userDTO: UserDTO) {
+  update(@Param('id') id: string, @Body() userDTO: UpdateUserDTO) {
     return this.userService.update(id, userDTO);
   }
 
