@@ -51,6 +51,10 @@ export class ComponentService {
       .populate('components');
   }
 
+  /*  
+  Obtiene todos los componentes.
+  Retorna lista de componentes con sus descripciones y subcomponentes poblados.
+  */
   async findAll() {
     return this.componentModel
       .find()
@@ -58,6 +62,11 @@ export class ComponentService {
       .populate('components');
   }
 
+  /*  
+  Busca un componente por su ID.
+  Si no se encuentra, lanza una excepción NotFoundException.
+  Retorna el componente con sus descripciones y subcomponentes poblados.
+  */
   async findOne(id: string) {
     const found = await this.componentModel
       .findById(id)
@@ -197,7 +206,7 @@ export class ComponentService {
   /* 
   Elimina un componente.
   Si el componente tiene subcomponentes, no se puede eliminar.
-  Si el componente tiene un padre, se desasocia de él.
+  Si el componente es subcomponente, se desasocia del componente.
   Se registra la acción en el historial y se retorna un mensaje de éxito.
   */
   async delete(id: string, userId: string) {
@@ -228,7 +237,7 @@ export class ComponentService {
 
   /* 
   Agrega un nuevo subcomponente nuevo a un componente.
-  Crea el subcomponente y lo asocia al componente padre.
+  Crea el subcomponente y lo asocia al componente.
   Registra la acción en el historial y retorna el subcomponente creado.
   */
   async addSubComponent(componentId: string, dto: CreateComponentDto, userid: string) {
