@@ -79,11 +79,12 @@ Solo puede visualizar componentes y jerarquía.
 - src/common/: Recursos.
 
 ## Tecnologías utilizadas
-- NestJS.
-- MongoDB (Mongoose).
-- TypeScript.
-- JWT para autenticación.
-- Swagger para documentación interactiva.
+- NestJS
+- Express.js
+- MongoDB (Mongoose)
+- TypeScript
+- JWT para autenticación
+- Swagger para documentación interactiva
 
 ## Contacto
 Para cualquier duda o consulta, contactar al equipo DigitalAlchemists a través del correo digitalAlchemists2025@gmail.com

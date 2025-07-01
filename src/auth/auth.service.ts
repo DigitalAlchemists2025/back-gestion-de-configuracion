@@ -10,6 +10,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   
+  /*
+  Valida las credenciales del usuario.
+  Busca al usuario por su correo electrónico y verifica la contraseña.
+  Si las credenciales son válidas, retorna el usuario; de lo contrario, retorna null.
+  */
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
 
@@ -23,6 +28,11 @@ export class AuthService {
     return null;
   }
 
+  /*
+  Valida inicio de sesión por credenciales.
+  Genera un token JWT con el payload del usuario.
+  Retorna el token, el ID del usuario y su rol.
+  */
   async signIn(user: any) {
     const payload = {
       username: user.email,
@@ -39,10 +49,19 @@ export class AuthService {
     };
   }
 
+  /*  
+  Crea un nuevo usuario en la base de datos con los datos proporcionados en userDTO.
+  Retorna el usuario creado.
+  */
   async signUp(userDTO: UserDTO) {
     return this.userService.create(userDTO);
   }
 
+  /*  
+  Valida el correo electrónico proporcionado.
+  Busca al usuario por su correo electrónico y retorna el usuario.
+  Si no existe, retorna null. 
+  */
   async validateEmail(email: string) {
     return this.userService.findByEmail(email);
   }

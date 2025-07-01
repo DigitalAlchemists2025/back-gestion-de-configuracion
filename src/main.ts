@@ -1,9 +1,9 @@
 import { TimeOutInterceptor } from './common/interceptors/timeout.interceptor';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { AllExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.use(cors({
-    origin: [process.env.FRONT_URL, process.env.FRONT_MOVIL_URL],
+    origin: [process.env.FRONT_URL, process.env.FRONT_URL_ALT, process.env.FRONT_MOVIL_URL],
     methods: ['GET', 'POST','PUT','DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
